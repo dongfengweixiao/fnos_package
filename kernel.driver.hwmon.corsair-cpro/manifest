@@ -1,0 +1,13 @@
+appname                         = kernel.driver.hwmon.corsair-cpro
+version                         = 1.0.0
+display_name                    = Corsair CPRO driver
+desc                            = Corsair CPRO 驱动
+arch                            = x86_64
+source                          = thirdparty
+maintainer                      = MisterZ42
+maintainer_url                  = https://github.com/MisterZ42/corsair-cpro
+distributor                     = Dee.H.Y
+distributor_url                 = https://github.com/dongfengweixiao/fnos_package
+install_type                    = root
+checkport                       = false
+disable_authorization_path      = true
