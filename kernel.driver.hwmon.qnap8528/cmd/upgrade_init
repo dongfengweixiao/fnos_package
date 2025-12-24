@@ -1,0 +1,16 @@
+#!/bin/bash
+
+### This script is called after the user uninstalls the application.
+KERNEL_MOD="corsair_cpro"
+currentKernelVersion=$(uname -r)
+
+echo "$(date +'%Y/%m/%d %H:%M:%S')\t" $0 $*
+echo "Upgrade ${KERNEL_MOD}"
+modprobe -r -v ${KERNEL_MOD} || echo "Failed to unload ${KERNEL_MOD}"
+depmod
+echo "modprobe -D ${KERNEL_MOD}"
+modprobe -D ${KERNEL_MOD}
+
+rm -f /lib/modules/${currentKernelVersion}/extra/hwmon/${KERNEL_MOD}.ko
+
+exit 0

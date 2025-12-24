@@ -1,0 +1,13 @@
+appname                         = kernel.driver.hwmon.qnap8528
+version                         = 1.18
+display_name                    = QNAP 8528 driver
+desc                            = QNAP 8528 驱动
+arch                            = x86_64
+source                          = thirdparty
+maintainer                      = 0xGiddi
+maintainer_url                  = https://github.com/0xGiddi/qnap8528
+distributor                     = Dee.H.Y
+distributor_url                 = https://github.com/dongfengweixiao/fnos_package
+install_type                    = root
+checkport                       = false
+disable_authorization_path      = true

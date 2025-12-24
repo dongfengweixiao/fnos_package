@@ -1,0 +1,52 @@
+#!/bin/bash
+
+if [[ "$1" != "status" ]];then
+  echo -e "$(date +'%Y/%m/%d %H:%M:%S')\t" $0 $*
+fi
+
+PACKAGE_BASE=${TRIM_APPDEST}
+KERNEL_MOD="qnap8528"
+KERNEL_FILE="qnap8528.ko"
+SUPPORT_KERNEL_LIST=(
+  "6.12.18-trim"
+)
+currentKernelVersion=$(uname -r)
+currentKernelBuildNumber=$(uname -v | grep -oP '(?<=#)\d+')
+
+case $1 in
+start)
+  # 输出当前的内核版本信息
+  echo "Current os kernel version: $currentKernelVersion, build number: $currentKernelBuildNumber"
+  # 判断当前内核版本是否支持
+  if [[ ! " ${SUPPORT_KERNEL_LIST[@]} " =~ " ${currentKernelVersion} " ]]; then
+    echo "Current os kernel version: $currentKernelVersion is not supported, please use supported kernel version: ${SUPPORT_KERNEL_LIST[@]}"
+    exit 1
+  fi
+  # 将内核模块复制到指定的目录下
+  mkdir -p /lib/modules/${currentKernelVersion}/extra/hwmon/
+
+  cp -rf ${PACKAGE_BASE}/app/qnap8528_${currentKernelVersion}_3/${KERNEL_FILE} /lib/modules/${currentKernelVersion}/extra/hwmon/
+  
+  modprobe -r -v ${KERNEL_MOD} || echo "Failed to unload ${KERNEL_MOD}"
+  depmod
+  modprobe -v ${KERNEL_MOD} || echo "Failed to load ${KERNEL_MOD}"
+  ;;
+stop)
+  modprobe -r -v ${KERNEL_MOD} || echo "Failed to unload ${KERNEL_MOD}"
+  rm -f /lib/modules/${currentKernelVersion}/extra/hwmon/${KERNEL_FILE}
+  ;; 
+status)
+  modlist=$(lsmod | grep ${KERNEL_MOD} | wc -l)
+  if [[ -d "/lib/modules/${currentKernelVersion}/extra/hwmon" && ! $modlist -eq 0 ]]; then
+    exit 0
+  else
+    echo -e "$(date +'%Y/%m/%d %H:%M:%S')\t" $0 $*
+    echo "lsmod ${KERNEL_MOD}"
+    printf "$(lsmod | grep ${KERNEL_MOD})\n"
+    exit 3
+  fi
+  ;;
+*)
+  exit 1
+  ;;
+esac
